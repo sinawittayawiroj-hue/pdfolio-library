@@ -1,0 +1,31 @@
+# GitHub Action — move this file to  .github/workflows/build-library-index.yml  in your repo.
+name: Build library index
+
+on:
+  workflow_dispatch:        # lets you run it by hand from the Actions tab
+  schedule:
+    - cron: '0 4 1 * *'     # also refresh automatically on the 1st of each month
+
+permissions:
+  contents: write            # allows the Action to commit the built index back to the repo
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Build the index
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TOP_N: '5000'      # raise toward 57000 for the whole catalogue (larger file)
+        run: node build-index.mjs
+      - name: Commit the index
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add gutenberg-full.json
+          git commit -m "Update library index" || echo "No changes"
+          git push
