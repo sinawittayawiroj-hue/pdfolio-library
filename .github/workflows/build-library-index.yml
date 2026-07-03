@@ -20,7 +20,7 @@ jobs:
       - name: Build the index
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          TOP_N: '5000'      # raise toward 57000 for the whole catalogue (larger file)
+          MAX_BOOKS: '20000'      # raise toward 57000 for the whole catalogue (larger file)
         run: node build-index.mjs
       - name: Commit the index
         run: |
